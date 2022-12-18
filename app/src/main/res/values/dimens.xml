@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="segment_height">30dp</dimen>
+    <dimen name="segment_width">0dp</dimen>
+    <dimen name="segment_weight">0.2</dimen>
+</resources>
