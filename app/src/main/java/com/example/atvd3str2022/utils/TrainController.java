@@ -7,5 +7,6 @@ public interface TrainController {
 
     int getSpeed();
     void setSpeed(int speed);
-    public void startStopRoutine(boolean running) throws InterruptedException;
+    void startStopRoutine();
+    Boolean isTerminated();
 }

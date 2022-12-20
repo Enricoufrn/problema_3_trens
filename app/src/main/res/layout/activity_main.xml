@@ -477,18 +477,102 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout"
         app:layout_constraintVertical_bias="1.0">
 
-        <Button
-            android:id="@+id/start"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/controller_1_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:orientation="vertical"
+            android:background="@color/train_1">
 
-        </Button>
+            <ImageButton
+                android:id="@+id/increase_speed_btn_controller_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/increase_speed_icon">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/decrease_speed_btn_controller_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/decrease_speed_icon">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/start_stop_train_btn_controller_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/start_icon">
+            </ImageButton>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/controller_2_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:orientation="vertical"
+            android:background="@color/train_2">
+
+            <ImageButton
+                android:id="@+id/increase_speed_btn_controller_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/increase_speed_icon">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/decrease_speed_btn_controller_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/decrease_speed_icon">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/start_stop_train_btn_controller_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/start_icon">
+            </ImageButton>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/controller_3_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:orientation="vertical"
+            android:background="@color/train_3">
+
+            <ImageButton
+                android:id="@+id/increase_speed_btn_controller_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/increase_speed_icon">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/decrease_speed_btn_controller_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/decrease_speed_icon">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/start_stop_train_btn_controller_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/start_icon">
+            </ImageButton>
+        </LinearLayout>
 
     </LinearLayout>
 

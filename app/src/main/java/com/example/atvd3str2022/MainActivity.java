@@ -1,10 +1,13 @@
 package com.example.atvd3str2022;
 
+import android.service.controls.Control;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
+import com.example.atvd3str2022.model.ControlPanel;
 import com.example.atvd3str2022.model.Track;
 import com.example.atvd3str2022.model.TrackSegment;
 import com.example.atvd3str2022.model.Train;
@@ -34,58 +37,79 @@ public class MainActivity extends AppCompatActivity implements TrainControllerLi
             segmentView11, segmentView12, segmentView13, segmentView14, segmentView15, segmentView16, segmentView17, segmentView18, segmentView19, segmentView20,
             segmentView21, segmentView22, segmentView23, segmentView24, segmentView25, segmentView26, segmentView27, segmentView28, segmentView29, segmentView30,
             segmentView31, segmentView32, segmentView33, segmentView34, segmentView35, segmentView36, segmentView37, segmentView38, segmentView39, segmentView40,
-            segmentView41, segmentView42, segmentView43, segmentView44, segmentView45, segmentView46, segmentView47, segmentView48, segmentView49, segmentView50;
+            segmentView41, segmentView42, segmentView43, segmentView44, segmentView45, segmentView46, segmentView47, segmentView48, segmentView49, segmentView50,
+            segmentView51, segmentView52, segmentView53, segmentView54, segmentView55;
 
     private View[] segmentViews;
 
-    private ExecutorService executorService1, executorService2, executorService3;
-
-    private Button button;
-
-    private boolean start;
+    private ImageButton increaseSpeedBtnController1, increaseSpeedBtnController2, increaseSpeedBtnController3, decreaseSpeedBtnController1,
+            decreaseSpeedBtnController2, decreaseSpeedBtnController3, startStopBtnController1, startStopBtnController2, startStopBtnController3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Find all track segments
         findAllSegment();
-        segments = new TrackSegment[50];
+        initializeAllTrackSegments();
+
+        configAllTrainRoutes();
+
+        // Create the trains
+        Train train1 = new Train(getResources().getColor(R.color.train_1), 1, route1);
+        Train train2 = new Train(getResources().getColor(R.color.train_2), 2, route2);
+        Train train3 = new Train(getResources().getColor(R.color.train_3), 3, route3);
+
+
+        // Instance the threads for each train
+        ExecutorService executorService1 = Executors.newSingleThreadExecutor();
+        ExecutorService executorService2 = Executors.newSingleThreadExecutor();
+        ExecutorService executorService3 = Executors.newSingleThreadExecutor();
+
+        // Instance the controllers
+        TrainController controller1 = new TrainTrainControllerImpl(this, train1, executorService1);
+        TrainController controller2 = new TrainTrainControllerImpl(this, train2, executorService2);
+        TrainController controller3 = new TrainTrainControllerImpl(this, train3, executorService3);
+
+        // find all controllers buttons
+        findAllControllersButtons();
+
+        // Instance the control panels
+        ControlPanel controlPanel1 = new ControlPanel(increaseSpeedBtnController1, decreaseSpeedBtnController1, startStopBtnController1, controller1);
+        ControlPanel controlPanel2 = new ControlPanel(increaseSpeedBtnController2, decreaseSpeedBtnController2, startStopBtnController2, controller2);
+        ControlPanel controlPanel3 = new ControlPanel(increaseSpeedBtnController3, decreaseSpeedBtnController3, startStopBtnController3, controller3);
+
+    }
+
+    public void findAllControllersButtons(){
+        increaseSpeedBtnController1 = findViewById(R.id.increase_speed_btn_controller_1);
+        increaseSpeedBtnController2 = findViewById(R.id.increase_speed_btn_controller_2);
+        increaseSpeedBtnController3 = findViewById(R.id.increase_speed_btn_controller_3);
+
+        decreaseSpeedBtnController1 = findViewById(R.id.decrease_speed_btn_controller_1);
+        decreaseSpeedBtnController2 = findViewById(R.id.decrease_speed_btn_controller_2);
+        decreaseSpeedBtnController3 = findViewById(R.id.decrease_speed_btn_controller_3);
+
+        startStopBtnController1 = findViewById(R.id.start_stop_train_btn_controller_1);
+        startStopBtnController2 = findViewById(R.id.start_stop_train_btn_controller_2);
+        startStopBtnController3 = findViewById(R.id.start_stop_train_btn_controller_3);
+    }
+
+    public void initializeAllTrackSegments(){
+        segments = new TrackSegment[55];
         segmentViews = new View[]{
                 segmentView1, segmentView2, segmentView3, segmentView4, segmentView5, segmentView6, segmentView7, segmentView8, segmentView9, segmentView10,
                 segmentView11, segmentView12, segmentView13, segmentView14, segmentView15, segmentView16, segmentView17, segmentView18, segmentView19, segmentView20,
                 segmentView21, segmentView22, segmentView23, segmentView24, segmentView25, segmentView26, segmentView27, segmentView28, segmentView29, segmentView30,
                 segmentView31, segmentView32, segmentView33, segmentView34, segmentView35, segmentView36, segmentView37, segmentView38, segmentView39, segmentView40,
-                segmentView41, segmentView42, segmentView43, segmentView44, segmentView45, segmentView46, segmentView47, segmentView48, segmentView49, segmentView50};
+                segmentView41, segmentView42, segmentView43, segmentView44, segmentView45, segmentView46, segmentView47, segmentView48, segmentView49, segmentView50,
+                segmentView51, segmentView52, segmentView53, segmentView54, segmentView55};
         for(int i = 0; i < segments.length; i++){
             ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
             segments[i] = new TrackSegment(readWriteLock);
             segments[i].setSegment(segmentViews[i]);
         }
-        configAllTrainRoutes();
-        Train train1 = new Train(getResources().getColor(R.color.train_1), 1, route1);
-        train1.setSpeed(1);
-        Train train2 = new Train(getResources().getColor(R.color.train_2), 2, route2);
-        Train train3 = new Train(getResources().getColor(R.color.train_3), 3, route3);
-        TrainController controller1 = new TrainTrainControllerImpl(this, train1);
-        TrainController controller2 = new TrainTrainControllerImpl(this, train2);
-        TrainController controller3 = new TrainTrainControllerImpl(this, train3);
-        button = findViewById(R.id.start);
-        start = false;
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                start = !start;
-                executorService1.submit(() ->{
-                    try {
-                        controller1.startStopRoutine(start);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        });
-        executorService1 = Executors.newSingleThreadExecutor();
-
     }
 
     public void configAllTrainRoutes(){
@@ -111,55 +135,60 @@ public class MainActivity extends AppCompatActivity implements TrainControllerLi
         segmentQueue1.add(segments[1]);
         segmentQueue1.add(segments[0]);
         route1 = new TrainRoute(segmentQueue1);
-//        Queue<TrackSegment> segmentQueue2 = new LinkedList<>();
-//        segmentQueue1.add(segment41);
-//        segmentQueue1.add(segment42);
-//        segmentQueue1.add(segment43);
-//        segmentQueue1.add(segment44);
-//        segmentQueue1.add(segment45);
-//        segmentQueue1.add(segment21);
-//        segmentQueue1.add(segment22);
-//        segmentQueue1.add(segment23);
-//        segmentQueue1.add(segment24);
-//        segmentQueue1.add(segment25);
-//        segmentQueue1.add(segment46);
-//        segmentQueue1.add(segment47);
-//        segmentQueue1.add(segment48);
-//        segmentQueue1.add(segment49);
-//        segmentQueue1.add(segment50);
-//        segmentQueue1.add(segment11);
-//        segmentQueue1.add(segment12);
-//        segmentQueue1.add(segment13);
-//        segmentQueue1.add(segment14);
-//        segmentQueue1.add(segment15);
-//        route2 = new TrainRoute(segmentQueue2);
-//        Queue<TrackSegment> segmentQueue3 = new LinkedList<>();
-//        segmentQueue3.add(segment31);
-//        segmentQueue3.add(segment32);
-//        segmentQueue3.add(segment33);
-//        segmentQueue3.add(segment34);
-//        segmentQueue3.add(segment35);
-//        segmentQueue3.add(segment26);
-//        segmentQueue3.add(segment27);
-//        segmentQueue3.add(segment28);
-//        segmentQueue3.add(segment29);
-//        segmentQueue3.add(segment30);
-//        segmentQueue3.add(segment16);
-//        segmentQueue3.add(segment17);
-//        segmentQueue3.add(segment18);
-//        segmentQueue3.add(segment19);
-//        segmentQueue3.add(segment20);
-//        segmentQueue3.add(segment46);
-//        segmentQueue3.add(segment47);
-//        segmentQueue3.add(segment48);
-//        segmentQueue3.add(segment49);
-//        segmentQueue3.add(segment50);
-//        segmentQueue3.add(segment36);
-//        segmentQueue3.add(segment37);
-//        segmentQueue3.add(segment38);
-//        segmentQueue3.add(segment39);
-//        segmentQueue3.add(segment40);
-//        route3 = new TrainRoute(segmentQueue3);
+        Queue<TrackSegment> segmentQueue2 = new LinkedList<>();
+        segmentQueue2.add(segments[40]);
+        segmentQueue2.add(segments[41]);
+        segmentQueue2.add(segments[42]);
+        segmentQueue2.add(segments[43]);
+        segmentQueue2.add(segments[44]);
+        segmentQueue2.add(segments[20]);
+        segmentQueue2.add(segments[21]);
+        segmentQueue2.add(segments[22]);
+        segmentQueue2.add(segments[23]);
+        segmentQueue2.add(segments[24]);
+        segmentQueue2.add(segments[49]);
+        segmentQueue2.add(segments[48]);
+        segmentQueue2.add(segments[47]);
+        segmentQueue2.add(segments[46]);
+        segmentQueue2.add(segments[45]);
+        segmentQueue2.add(segments[14]);
+        segmentQueue2.add(segments[13]);
+        segmentQueue2.add(segments[12]);
+        segmentQueue2.add(segments[11]);
+        segmentQueue2.add(segments[10]);
+        route2 = new TrainRoute(segmentQueue2);
+        Queue<TrackSegment> segmentQueue3 = new LinkedList<>();
+        segmentQueue3.add(segments[50]);
+        segmentQueue3.add(segments[51]);
+        segmentQueue3.add(segments[52]);
+        segmentQueue3.add(segments[53]);
+        segmentQueue3.add(segments[54]);
+        segmentQueue3.add(segments[34]);
+        segmentQueue3.add(segments[33]);
+        segmentQueue3.add(segments[32]);
+        segmentQueue3.add(segments[31]);
+        segmentQueue3.add(segments[30]);
+        segmentQueue3.add(segments[29]);
+        segmentQueue3.add(segments[28]);
+        segmentQueue3.add(segments[27]);
+        segmentQueue3.add(segments[26]);
+        segmentQueue3.add(segments[25]);
+        segmentQueue3.add(segments[15]);
+        segmentQueue3.add(segments[16]);
+        segmentQueue3.add(segments[17]);
+        segmentQueue3.add(segments[18]);
+        segmentQueue3.add(segments[19]);
+        segmentQueue3.add(segments[45]);
+        segmentQueue3.add(segments[46]);
+        segmentQueue3.add(segments[47]);
+        segmentQueue3.add(segments[48]);
+        segmentQueue3.add(segments[49]);
+        segmentQueue3.add(segments[35]);
+        segmentQueue3.add(segments[36]);
+        segmentQueue3.add(segments[37]);
+        segmentQueue3.add(segments[38]);
+        segmentQueue3.add(segments[39]);
+        route3 = new TrainRoute(segmentQueue3);
     }
 
     public void findAllSegment(){
@@ -222,6 +251,12 @@ public class MainActivity extends AppCompatActivity implements TrainControllerLi
         segmentView48 = findViewById(R.id.l4_l7_seg_8);
         segmentView49 = findViewById(R.id.l4_l7_seg_9);
         segmentView50 = findViewById(R.id.l4_l7_seg_10);
+
+        segmentView51 = findViewById(R.id.l9_seg_10);
+        segmentView52 = findViewById(R.id.l9_seg_9);
+        segmentView53 = findViewById(R.id.l9_seg_8);
+        segmentView54 = findViewById(R.id.l9_seg_7);
+        segmentView55 = findViewById(R.id.l9_seg_6);
     }
 
     @Override

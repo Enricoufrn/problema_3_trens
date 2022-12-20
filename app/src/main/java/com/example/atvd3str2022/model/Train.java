@@ -16,6 +16,7 @@ public class Train {
         this.color = color;
         this.id = id;
         this.route = route;
+        this.speed = 1;
     }
 
     public int getColor() {
