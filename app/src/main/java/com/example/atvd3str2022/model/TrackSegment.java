@@ -44,19 +44,20 @@ public class TrackSegment {
         try {
             writeLock.lock();
             isOccupied = true;
-            Log.d("TrainSegment", "entry: o trem de cor " + color + "entrou no segmento");
+            Log.d("TrainSegment", "entry: o trem de cor " + color + " entrou no segmento");
         }finally {
             writeLock.unlock();
         }
     }
 
     public void goOut(){
-        Lock readLock = lock.readLock();
+        Lock writeLock = lock.writeLock();
         try {
-            readLock.lock();
+            writeLock.lock();
             isOccupied = false;
+            Log.d("TrainSegment", "goOut: o último trem saiu do segmento | isOccupied = "+ isOccupied);
         }finally {
-            readLock.unlock();
+            writeLock.unlock();
         }
     }
 

@@ -1,8 +1,12 @@
 package com.example.atvd3str2022.model;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * This class represents a track
@@ -10,6 +14,9 @@ import java.util.Queue;
 public class Track {
 
     private int id;
+    private volatile boolean isOccupied;
+    private int numberOfTrains;
+
 
     /**
      * List of trains
@@ -20,10 +27,10 @@ public class Track {
      */
     private Queue<TrackSegment> segments;
 
-    public Track(int id, Queue<TrackSegment> segments) {
-        this.id = id;
+    public Track(Queue<TrackSegment> segments) {
         this.segments = segments;
         this.trains =  new ArrayList<>();
+        this.numberOfTrains = 0;
     }
 
     public int getId() {
@@ -48,7 +55,7 @@ public class Track {
 
     /**
      * Check if this segment contains a train
-     * @param segment Segment
+     * @param segment Segment ID
      * @return True or False
      */
     public boolean isSegmentOccupied(int segment) {
@@ -72,6 +79,29 @@ public class Track {
         TrackSegment segment = this.segments.poll();
         this.segments.add(segment);
         return segment;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public boolean isOccupied() {
+        final int[] free = {0};
+        segments.stream().forEach( segment -> {
+            if (segment.isOccupied()){
+                this.isOccupied = true;
+            }else{
+                free[0]++;
+            }
+            if(free[0] == 5)
+                this.isOccupied = false;
+        });
+        return this.isOccupied;
+    }
+
+    public int getNumberOfTrains() {
+        return numberOfTrains;
+    }
+
+    public void setNumberOfTrains(int numberOfTrains) {
+        this.numberOfTrains = numberOfTrains;
     }
 
     //    // Método para verificar se há deadlocks possíveis entre os trens

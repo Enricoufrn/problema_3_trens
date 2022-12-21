@@ -1,5 +1,8 @@
 package com.example.atvd3str2022.utils;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import com.example.atvd3str2022.model.Train;
 
 import java.util.concurrent.ExecutorService;
@@ -27,21 +30,26 @@ public class TrainTrainControllerImpl implements TrainController{
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void startStopRoutine() {
         this.running = !running;
         if(running){
             this.executorService.submit(() ->{
                 while(running){
-                    this.train.move(Train.ENTRY);
-                    listener.showTrainPosition(this.train, Train.ENTRY);
-                    try {
-                        Thread.sleep((1000L)/this.train.getSpeed());
-                    } catch (InterruptedException e) {
+                    try{
+                        this.train.move(Train.ENTRY);
+                        listener.showTrainPosition(this.train, Train.ENTRY);
+                        try {
+                            Thread.sleep((1000L)/this.train.getSpeed());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        this.train.move(Train.GO_OUT);
+                        listener.showTrainPosition(this.train, Train.GO_OUT);
+                    }catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    this.train.move(Train.GO_OUT);
-                    listener.showTrainPosition(this.train, Train.GO_OUT);
                 }
             });
         }

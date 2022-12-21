@@ -1,5 +1,9 @@
 package com.example.atvd3str2022.model;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
+
 public class Train {
 
     public static final int ENTRY = 605;
@@ -11,6 +15,7 @@ public class Train {
     private int id;
     private TrainRoute route;
     private TrackSegment lastSegment;
+    private Track currentTrack;
 
     public Train(int color, int id, TrainRoute route) {
         this.color = color;
@@ -57,12 +62,24 @@ public class Train {
     /**
      * Change the train position
      */
-    public void move(int oper) {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void move(int oper) throws InterruptedException {
         if(oper == GO_OUT && this.lastSegment != null){
             this.lastSegment.goOut();
         }else{
+//            TrackSegment nextSegment = this.route.getNextPosition();
+            if(this.route.getNextTrack() != null){
+                while (this.route.getNextTrack().isOccupied()){
+                    Log.d("move", "O trem de cor "+this.color+ " encontrou um trilho ocupado!");
+                    Thread.sleep(2000);
+                }
+            }
             TrackSegment nextSegment = this.route.getNextPosition();
             nextSegment.entry(this.color);
+//            if(this.route.getCountSegments() == 1)
+//                this.route.getCurrentTrack().setNumberOfTrains(this.route.getCurrentTrack().getNumberOfTrains() + 1);
+//            if(this.route.getCountSegments() == 4)
+//                this.route.getCurrentTrack().setNumberOfTrains(this.route.getCurrentTrack().getNumberOfTrains() - 1);
             this.lastSegment = nextSegment;
             this.position = nextSegment;
         }
